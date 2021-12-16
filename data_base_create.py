@@ -28,7 +28,7 @@ if __name__ == "__main__":
                 conn.commit()
             cursor.execute('DROP TABLE IF EXISTS water;')
             print('Creating table....')
-            cursor.execute("CREATE TABLE water (temperatura INT(2), cisnienie FLOAT(8,5), gestosc FLOAT(4,1), cieplo_wlasciwe FLOAT(6,3), wspl_przew_ciepla FLOAT(3,1), wspl_dyf_cieplnej FLOAT(3,1), wspl_lepkosci_dynamicznej FLOAT(5,1), wspl_lepkosci_kinematycznej FLOAT(4,3), wspl_rozszerzalnosci FLOAT(3,2) , napiecie_powierzchniowe FLOAT(4,1) ,liczba_prandtla FLOAT(4,2))")
+            cursor.execute("CREATE TABLE water (temperatura INT(2), cisnienie FLOAT(8,5), gestosc FLOAT(4,1), cieplo_wlasciwe FLOAT(8,3), wspl_przew_ciepla FLOAT(3,1), wspl_dyf_cieplnej FLOAT(6,1), wspl_lepkosci_dynamicznej FLOAT(5,1), wspl_lepkosci_kinematycznej FLOAT(4,3), wspl_rozszerzalnosci FLOAT(3,2) , napiecie_powierzchniowe FLOAT(4,1) ,liczba_prandtla FLOAT(4,2))")
             print("water table is created....")
             for i,row in csv_water.iterrows():
                 sql = "INSERT INTO materials.water VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"

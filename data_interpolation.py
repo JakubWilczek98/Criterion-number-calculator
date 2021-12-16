@@ -16,9 +16,9 @@ def visu(temp,value,new_temperature, new_values):
 
 if __name__ == "__main__":
     #Data set
-    csv_file = pd.read_csv('dry_air.csv', sep=',',header=None)
+    csv_file = pd.read_csv('water.csv', sep=',',header=None)
     #New temperature
-    new_temperature = np.arange(-50, 1200+1, 1)
+    new_temperature = np.arange(0, 270+1, 1)
     new_v = []
     A = []
     #main
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     A = np.array(A)
     A = np.round(A,6)
     #print(A)
-    np.savetxt("new_csv_dry_air.csv", np.column_stack(A), delimiter=",", fmt='%s')
+    np.savetxt("water_interpolated.csv", np.column_stack(A), delimiter=",", fmt='%s')
         
     
     
