@@ -16,48 +16,24 @@ def visu(temp,value,new_temperature, new_values):
 
 if __name__ == "__main__":
     #Data set
-    csv_water = pd.read_csv('water.csv', sep=',',header=None)
+    csv_file = pd.read_csv('dry_air.csv', sep=',',header=None)
     #New temperature
-    new_temperature = np.arange(0, 370+1, 1)
+    new_temperature = np.arange(-50, 1200+1, 1)
     new_v = []
     A = []
-    
-    for i in csv_water:
+    #main
+    for i in csv_file:
         new_v = 0
-        new_v = new_values(new_temperature, interpolate(csv_water[0], csv_water[i]))
-        #visu(csv_water[0],csv_water[i],new_temperature,new_v)
+        new_v = new_values(new_temperature, interpolate(csv_file[0], csv_file[i]))
+        #visu(csv_file[0],csv_file[i],new_temperature,new_v)
         A.append(new_v)
-    
-    
+    #Save dataset
     A = np.array(A)
     A = np.round(A,6)
-    print(A)
-    np.savetxt("new_csv_water.csv", np.column_stack(A), delimiter=",", fmt='%s')
+    #print(A)
+    np.savetxt("new_csv_dry_air.csv", np.column_stack(A), delimiter=",", fmt='%s')
         
-        
     
-    
-    
-    
-    
-    
-    
-    '''
-    
-    
-    new_values = new_values(new_temperature,interpolate(csv_water[0], csv_water[1]))
-    
-    plt.plot(new_temperature, new_values, '*')
-    
-    
-    f = interp1d(csv_water[0], csv_water[1])
-    f2 = interp1d(csv_water[0], csv_water[1], kind='cubic')
-    
-    
-    
-    #plt.plot(csv_water[0],csv_water[1], 'o', x_new, f(x_new), '*')
-    
-    '''
     
 
 
