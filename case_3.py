@@ -17,7 +17,7 @@ temp_plynu = 30
 temp_powierzchni = 170
 temp_charakterystyczna = round((temp_powierzchni + temp_plynu)/2)
 wymiar_charakterystyczny = 0.1
-predkosc_charakterystyczna = 5
+predkosc_charakterystyczna = 10
 
 if material == 'water':
     selection = 'SELECT wspl_przew_ciepla, wspl_lepkosci_kinematycznej, liczba_prandtla, wspl_rozszerzalnosci FROM {} WHERE temperatura = {}'.format(material, temp_charakterystyczna)
@@ -57,8 +57,17 @@ elif liczba_Rayleigha > 20*10**6 and liczba_Rayleigha < 10**13:
     n = 1/3
 
 liczba_Nusselta = C * (liczba_Rayleigha)**(n)
+###
+liczba_Froudea = predkosc_charakterystyczna**2/(przysp_ziemskie * wymiar_charakterystyczny)
+
+liczba_Galileusza = liczba_Reynoldsa**2/liczba_Froudea
+
+#liczba_Galileusza2 = (przysp_ziemskie * wymiar_charakterystyczny**3)/wsp_lepkosci_kinematycznej**2
+
+liczba_Archimedesa = liczba_Galileusza * wsp_rozszerzalnosci * (temp_powierzchni - temp_plynu)
 
 print('liczba Prandlta:', liczba_Prandtla, '\nliczba Reynoldsa:', liczba_Reynoldsa, '\nliczba Grashofa:', liczba_Grashofa,
       '\nliczba Rayleigha:', liczba_Rayleigha, '\nliczba Nusselta:', liczba_Nusselta)
 
+print('liczba Galileusza:', liczba_Galileusza, '\nliczba Archimedesa:', liczba_Archimedesa)
 #print(myresult)
