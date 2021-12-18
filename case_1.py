@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 import mysql.connector as msql
 from mysql.connector import Error
-  
-    
+      
 def l_reynoldsa(selected_material,selected_temp,selected_velosity, wymiar_charakterystyczny):
     mycursor.execute("SELECT wspl_lepkosci_dynamicznej FROM {} WHERE temperatura = {}".format(selected_material, selected_temp))
     myresult = mycursor.fetchall()            
@@ -38,7 +37,6 @@ def l_grashofa(selected_material, selected_temp, temperatura_sciany):
     wspl_lepkosci_kinematycznej = [i[0] for i in myresult][0]*10**-6
     return (g*wymiar_charakterystyczny**3*beta*abs(selected_temp-temperatura_sciany)/wspl_lepkosci_kinematycznej**2)
 
-
 def rozbieg_hydrauliczny(l_reynoldsa, wymiar_charakterystyczny, dlugosc):
     L_do_w_charakterystyczny = round(dlugosc/wymiar_charakterystyczny)
     if l_reynoldsa <=2300:   
@@ -72,8 +70,7 @@ def rozbieg_hydrauliczny(l_reynoldsa, wymiar_charakterystyczny, dlugosc):
         elif L_do_w_charakterystyczny > 40:
             eps_L = 1
     return eps_L
-    
-    
+        
 def prf_prw(selected_material, selected_temp, temperatura_sciany):
     if selected_material == "dry_air":
         mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(selected_material, selected_temp))
@@ -89,7 +86,6 @@ def prf_prw(selected_material, selected_temp, temperatura_sciany):
         prw = [i[0] for i in myresult][0]
         eps_prf_prw = prf/prw
     return eps_prf_prw, prf
-
 
 def etaf_etaw(selected_material, temperatura_wlot, temperatura_sciany):
     mycursor.execute("SELECT gestosc, wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}".format(selected_material, temperatura_wlot))
@@ -117,8 +113,7 @@ if __name__ == "__main__":
     selected_velosity = 0.1 #zmienna wejsciowa!
     wymiar_charakterystyczny = 60*10**-3 #zmienna wejsciowa!
     dlugosc = 2.1 #dlugosc    
-    
-    
+        
     try:
         mydb = msql.connect(host='localhost', 
                             user='root',
@@ -128,22 +123,12 @@ if __name__ == "__main__":
         if mydb.is_connected():
             mycursor = mydb.cursor()
             print("We are connected to database")  
-            '''
-            print(l_reynoldsa(selected_material, selected_temp, selected_velosity, wymiar_charakterystyczny))
-            print(l_prandtla(selected_material, selected_temp))
-            print(l_prandtla_cp(selected_material, selected_temp))
-            '''
             
-           
-            eps_prf_prw, prf = prf_prw(selected_material, temperatura_wlot, temperatura_sciany)
-            
-            l_reynoldsa = l_reynoldsa(selected_material, selected_temp, selected_velosity, wymiar_charakterystyczny)
-            
-            eps_L = rozbieg_hydrauliczny(l_reynoldsa, wymiar_charakterystyczny, dlugosc)
-            
+            eps_prf_prw, prf = prf_prw(selected_material, temperatura_wlot, temperatura_sciany)            
+            l_reynoldsa = l_reynoldsa(selected_material, selected_temp, selected_velosity, wymiar_charakterystyczny)            
+            eps_L = rozbieg_hydrauliczny(l_reynoldsa, wymiar_charakterystyczny, dlugosc)            
             l_grashofa = l_grashofa(selected_material, selected_temp, temperatura_sciany)
-            
-            
+                        
             print("Liczba reynoldsa: ")
             print(l_reynoldsa)
             print("Liczba grashofa: ")
@@ -155,10 +140,7 @@ if __name__ == "__main__":
             l_prandtla = l_prandtla(selected_material, selected_temp)
             print("Liczba prandtla:")
             print(l_prandtla)
-            
-            
-            
-            
+   
             if l_reynoldsa <= 2300:
             
                 #-----------------------Laminarny------------------------------ Re<=2300
@@ -179,7 +161,6 @@ if __name__ == "__main__":
                 print(l_nusselta)
             
             elif l_reynoldsa > 10000 and l_reynoldsa < 50000:
-    
     
                 #-----------------------Turbuletny------------------------------ Re>=10000
                 
