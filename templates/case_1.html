@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <h3><a href="http://127.0.0.1:5001">Home</a></h3>
+    </head>
+    <body> 
+        <form class = "grid" action = "/case_1_result" method = "POST"> 
+            <h4>Przejmowanie ciepła w przepływie wewnątrz kanałów</h4>
+            <label for = "temp1"> Temperatura na wlocie: </label>
+            <input type = "text" name="temp1" id = "temp1">
+            <br/>
+            <label for = "temp2"> Temperatura na wylocie: </label>
+            <input type = "text" name="temp2" id = "temp2">
+            <br/>
+            <label for = "temp3"> Temperatura na sciany: </label>
+            <input type = "text" name="temp3" id = "temp3">
+            <br/>
+            <label for = "material"> Wybierz płyn: </label> 
+            <select name="material" class="selectpicker form-control">
+            {% for o in data %}
+            <option value="{{ o.name }}">{{ o.name }}</option>
+            {% endfor %}
+            </select> 
+            <br/>
+            <label for = "velo"> Predkosc: </label>
+            <input type = "text" name="velo" id = "velo">
+            <br/>
+            <label for = "wymiar"> Wymiar charakterystyczny: </label>
+            <input type = "wymiar" name="wymiar" id = "wymiar">
+            <br/>
+            <label for = "dlugosc"> Dlugosc: </label>
+            <input type = "dlugosc" name="dlugosc" id = "dlugosc">
+            <br/>
+            <input type = "Submit" class = "file_submit">
+            
+            
+            <h4>Wyznaczone liczby kryterialne:</h4>
+            {% if temp1 %}
+            <h3  style="color: blue;">{{temp1}} {{material}}</h3>
+            {% endif %}
+            
+        
+        </form>
+    </body>
+
+</html>
