@@ -23,12 +23,12 @@ def case_2():
 @app.route("/case_3")
 
 def case_3():
-    return render_template("case_3.html")
+    return render_template("case_3.html", data=[{'name':'powietrze'}, {'name':'woda'}])
 
 @app.route("/case_4")
 
 def case_4():
-    return render_template("case_4.html")
+    return render_template("case_4.html", data=[{'name':'powietrze'}, {'name':'woda'}])
 
 @app.route("/case_1_result", methods = ["POST", "GET"])
 def case_1_result():
