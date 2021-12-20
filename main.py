@@ -58,7 +58,36 @@ def case_2_result():
     
     return render_template("case_2.html", 
                            temp1 = temp1, rodzaj = rodzaj, 
-                           data=[{'name':'powietrze'}, {'name':'woda'}], data1=[{'name':'Oplyw walca'}, {'name':'Oplyw plyty'}]) 
+                           data=[{'name':'powietrze'}, {'name':'woda'}], data1=[{'name':'Oplyw walca'}, {'name':'Oplyw plyty'}])
+
+@app.route("/case_3_result", methods=["POST", "GET"])
+def case_3_result():
+    output = request.form.to_dict()
+    temp1 = float(output["temp1"])
+    temp3 = float(output["temp3"])
+    material = request.form.get('material')
+    velosity = float(output["velo"])
+    wymiar = float(output["wymiar"])
+
+    return render_template("case_3.html",
+                           temp1=temp1,
+                           data=[{'name': 'powietrze'}, {'name': 'woda'}],
+                           )
+
+@app.route("/case_4_result", methods=["POST", "GET"])
+def case_4_result():
+    output = request.form.to_dict()
+    temp1 = float(output["temp1"])
+    temp3 = float(output["temp3"])
+    material = request.form.get('material')
+    velosity = float(output["velo"])
+    wymiar = float(output["wymiar"])
+
+    return render_template("case_4.html",
+                           temp1=temp1,
+                           temp3=temp3,
+                           data=[{'name': 'powietrze'}, {'name': 'woda'}],
+                           )
 
 if __name__ == '__main__':
-    app.run(debug = True, port=5001)
+    app.run(debug=True, port=5001)
