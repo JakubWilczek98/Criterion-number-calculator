@@ -1,73 +1,67 @@
-import mysql.connector
-
-# konwekcja swobodna w przestrzeni nieograniczonej
-
-mydb = mysql.connector.connect(
-    host='mysql.agh.edu.pl',
-    user='awilcze1',
-    password='***',
-    database='awilcze1'
-)
-
-mycursor = mydb.cursor()
+class Case_3():
+    def __init__(self, material, temp_plynu, temp_powierzchni, predkosc_charakterystyczna, wymiar_charakterystyczny, mycursor):
+        self.przysp_ziemskie = 9.81
+        self.material = material
+        self.temp_plynu = temp_plynu
+        self.temp_powierzchni = temp_powierzchni
+        self.temp_charakterystyczna = round((temp_powierzchni + temp_plynu)/2)
+        self.predkosc_charakterystyczna = predkosc_charakterystyczna
+        self.wymiar_charakterystyczny = wymiar_charakterystyczny
+        self.mycursor = mycursor
 
 
-material = 'dry_air'
-temp_plynu = 30
-temp_powierzchni = 170
-temp_charakterystyczna = round((temp_powierzchni + temp_plynu)/2)
-wymiar_charakterystyczny = 0.1
-predkosc_charakterystyczna = 10
+    def liczba_Prandtla(self):
+        selection = 'SELECT liczba_prandtla FROM {} WHERE temperatura = {}'.format(self.material, self.temp_charakterystyczna)
+        self.mycursor.execute(selection)
+        myresult = self.mycursor.fetchall()
+        self.liczba_Prandtla = [i[0] for i in myresult][0]
+        return self.liczba_Prandtla
 
-if material == 'water':
-    selection = 'SELECT wspl_przew_ciepla, wspl_lepkosci_kinematycznej, liczba_prandtla, wspl_rozszerzalnosci FROM {} WHERE temperatura = {}'.format(material, temp_charakterystyczna)
-elif material == 'dry_air':
-    selection = 'SELECT wspl_przew_ciepla, wspl_lepkosci_kinematycznej, liczba_prandtla FROM {} WHERE temperatura = {}'.format(material, temp_charakterystyczna)
+    def liczba_Reynoldsa(self):
+        selection = 'SELECT wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}'.format(self.material, self.temp_charakterystyczna)
+        self.mycursor.execute(selection)
+        myresult = self.mycursor.fetchall()
+        wsp_lepkosci_kinematycznej = ([i[0] for i in myresult][0]) / 10 ** 6
+        self.liczba_Reynoldsa = (self.predkosc_charakterystyczna * self.wymiar_charakterystyczny) / wsp_lepkosci_kinematycznej
+        return self.liczba_Reynoldsa
 
+    def liczba_Grashofa(self):
+        if self.material == 'water':
+            selection = 'SELECT wspl_lepkosci_kinematycznej, wspl_rozszerzalnosci FROM {} WHERE temperatura = {}'.format(
+                self.material, self.temp_charakterystyczna)
+            self.mycursor.execute(selection)
+            myresult = self.mycursor.fetchall()
+            wsp_lepkosci_kinematycznej = ([i[0] for i in myresult][0]) / 10 ** 6
+            wsp_rozszerzalnosci = ([i[1] for i in myresult][0]) / 10 ** 4
+            liczba_Grashofa = ((wsp_rozszerzalnosci * self.przysp_ziemskie * self.wymiar_charakterystyczny ** 3) / wsp_lepkosci_kinematycznej ** 2) * (
+                                      self.temp_powierzchni - self.temp_plynu)
+        elif self.material == 'dry_air':
+            selection = 'SELECT wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}'.format(self.material,
+                                                                                                   self.temp_charakterystyczna)
+            self.mycursor.execute(selection)
+            myresult = self.mycursor.fetchall()
+            wsp_lepkosci_kinematycznej = ([i[0] for i in myresult][0]) / 10 ** 6
+            wsp_rozszerzalnosci = 1 / 373
+            self.liczba_Grashofa = ((wsp_rozszerzalnosci * self.przysp_ziemskie * self.wymiar_charakterystyczny ** 3) / wsp_lepkosci_kinematycznej ** 2) * (
+                           self.temp_powierzchni - self.temp_plynu)
+        return self.liczba_Grashofa
 
-mycursor.execute(selection)
-myresult = mycursor.fetchall()
+    def liczba_Rayleigha(self):
+        self.liczba_Rayleigha = self.liczba_Grashofa * self.liczba_Prandtla
+        return self.liczba_Rayleigha
 
-
-przysp_ziemskie = 9.81
-wsp_przewodzenia_ciepla = ([i[0] for i in myresult][0])/10**2
-wsp_lepkosci_kinematycznej = ([i[1] for i in myresult][0])/10**6
-
-if material == 'water':
-    wsp_rozszerzalnosci = ([i[3] for i in myresult][0])/10**4
-elif material == 'dry_air':
-    wsp_rozszerzalnosci = 1/373
-
-liczba_Prandtla = [i[2] for i in myresult][0]
-liczba_Reynoldsa = (predkosc_charakterystyczna * wymiar_charakterystyczny)/wsp_lepkosci_kinematycznej
-liczba_Grashofa = ((wsp_rozszerzalnosci * przysp_ziemskie * wymiar_charakterystyczny**3)/wsp_lepkosci_kinematycznej**2)*(temp_powierzchni - temp_plynu)
-liczba_Rayleigha = liczba_Grashofa * liczba_Prandtla
-
-if liczba_Rayleigha < 0.001:
-    C = 0.5
-    n = 0
-elif liczba_Rayleigha >= 0.001 and liczba_Rayleigha < 500:
-    C = 1.18
-    n = 1/8
-elif liczba_Rayleigha >= 500 and liczba_Rayleigha < 20*10**6:
-    C = 0.54
-    n = 1/4
-elif liczba_Rayleigha > 20*10**6 and liczba_Rayleigha < 10**13:
-    C = 0.135
-    n = 1/3
-
-liczba_Nusselta = C * (liczba_Rayleigha)**(n)
-###
-liczba_Froudea = predkosc_charakterystyczna**2/(przysp_ziemskie * wymiar_charakterystyczny)
-
-liczba_Galileusza = liczba_Reynoldsa**2/liczba_Froudea
-
-#liczba_Galileusza2 = (przysp_ziemskie * wymiar_charakterystyczny**3)/wsp_lepkosci_kinematycznej**2
-
-liczba_Archimedesa = liczba_Galileusza * wsp_rozszerzalnosci * (temp_powierzchni - temp_plynu)
-
-print('liczba Prandlta:', liczba_Prandtla, '\nliczba Reynoldsa:', liczba_Reynoldsa, '\nliczba Grashofa:', liczba_Grashofa,
-      '\nliczba Rayleigha:', liczba_Rayleigha, '\nliczba Nusselta:', liczba_Nusselta)
-
-print('liczba Galileusza:', liczba_Galileusza, '\nliczba Archimedesa:', liczba_Archimedesa)
-#print(myresult)
+    def liczba_Nusselta(self):
+        if self.liczba_Rayleigha < 0.001:
+            C = 0.5
+            n = 0
+        elif self.liczba_Rayleigha >= 0.001 and self.liczba_Rayleigha < 500:
+            C = 1.18
+            n = 1 / 8
+        elif self.liczba_Rayleigha >= 500 and self.liczba_Rayleigha < 20 * 10 ** 6:
+            C = 0.54
+            n = 1 / 4
+        elif self.liczba_Rayleigha > 20 * 10 ** 6 and self.liczba_Rayleigha < 10 ** 13:
+            C = 0.135
+            n = 1 / 3
+        self.liczba_Nusselta = C * (self.liczba_Rayleigha) ** (n)
+        return self.liczba_Nusselta
