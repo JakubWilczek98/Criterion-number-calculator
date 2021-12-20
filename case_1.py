@@ -52,7 +52,7 @@ class Case_1:
             myresult = self.mycursor.fetchall()   
             wspl_lepkosci_kinematycznej = [i[0] for i in myresult][0]*10**-6
             self.l_grashofa = (g*self.wymiar_charakterystyczny**3*beta*abs(self.selected_temp-self.temperatura_sciany)/wspl_lepkosci_kinematycznej**2)
-            return round(self.l_grashofa)
+            return round(self.l_grashofa,3)
 
         def rozbieg_hydrauliczny(self):
             L_do_w_charakterystyczny = round(self.dlugosc/self.wymiar_charakterystyczny)
