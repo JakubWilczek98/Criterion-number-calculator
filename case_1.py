@@ -2,174 +2,142 @@ import pandas as pd
 import numpy as np
 import mysql.connector as msql
 from mysql.connector import Error
-      
-def l_reynoldsa(selected_material,selected_temp,selected_velosity, wymiar_charakterystyczny):
-    mycursor.execute("SELECT wspl_lepkosci_dynamicznej FROM {} WHERE temperatura = {}".format(selected_material, selected_temp))
-    myresult = mycursor.fetchall()            
-    wspl_lepkosci_dynamicznej = [i[0] for i in myresult][0] *10**-6
-    return (selected_velosity*wymiar_charakterystyczny)/wspl_lepkosci_dynamicznej
-
-def l_prandtla(selected_material, selected_temp):  
-    mycursor.execute("SELECT wspl_lepkosci_kinematycznej, wspl_dyf_cieplnej FROM {} WHERE temperatura = {}".format(selected_material, selected_temp))
-    myresult = mycursor.fetchall()            
-    wspl_lepkosci_kinematycznej = [i[0] for i in myresult][0]*10**-6
-    wspl_dyf_cieplnej = [i[1] for i in myresult][0]*10**-6
-    return wspl_lepkosci_kinematycznej/wspl_dyf_cieplnej
-
-def l_prandtla_cp(selected_material, selected_temp):
-    mycursor.execute("SELECT wspl_lepkosci_dynamicznej, cieplo_wlasciwe, wspl_przew_ciepla FROM {} WHERE temperatura = {}".format(selected_material, selected_temp))
-    myresult = mycursor.fetchall()            
-    wspl_lepkosci_dynamicznej = [i[0] for i in myresult][0]*10**-6
-    cieplo_wlasciwe = [i[1] for i in myresult][0]*10**3
-    wspl_przew_ciepla = [i[2] for i in myresult][0]*10**-2
-    return (cieplo_wlasciwe*wspl_lepkosci_dynamicznej)/(wspl_przew_ciepla)
-    
-def l_grashofa(selected_material, selected_temp, temperatura_sciany):
-    g = 9.81
-    if selected_material == "dry_air":
-        beta = 1/373
-    elif selected_material == "water":
-        mycursor.execute("SELECT wspl_rozszerzalnosci FROM {} WHERE temperatura = {}".format(selected_material, abs(selected_temp-temperatura_sciany)))
-        myresult = mycursor.fetchall()
-        beta = [i[0] for i in myresult][0]*10**-4
-    mycursor.execute("SELECT wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}".format(selected_material, selected_temp))
-    myresult = mycursor.fetchall()   
-    wspl_lepkosci_kinematycznej = [i[0] for i in myresult][0]*10**-6
-    return (g*wymiar_charakterystyczny**3*beta*abs(selected_temp-temperatura_sciany)/wspl_lepkosci_kinematycznej**2)
-
-def rozbieg_hydrauliczny(l_reynoldsa, wymiar_charakterystyczny, dlugosc):
-    L_do_w_charakterystyczny = round(dlugosc/wymiar_charakterystyczny)
-    if l_reynoldsa <=2300:   
-        if L_do_w_charakterystyczny <=1:
-            eps_L = 1.9
-        elif (L_do_w_charakterystyczny > 1 and L_do_w_charakterystyczny <=5):
-            eps_L = 1.44
-        elif (L_do_w_charakterystyczny > 5 and L_do_w_charakterystyczny <=10):
-            eps_L = 1.28
-        elif L_do_w_charakterystyczny > 10 and L_do_w_charakterystyczny <=20:
-            eps_L = 1.19
-        elif L_do_w_charakterystyczny > 20 and L_do_w_charakterystyczny <=30:
-            eps_L = 1.05
-        elif L_do_w_charakterystyczny > 30 and L_do_w_charakterystyczny <=40:
-            eps_L = 1.02
-        elif L_do_w_charakterystyczny > 40:
-            eps_L = 1
-    else:
-        if L_do_w_charakterystyczny <=1:
-            eps_L = 1.65
-        elif (L_do_w_charakterystyczny > 1 and L_do_w_charakterystyczny <=5):
-            eps_L = 1.34
-        elif (L_do_w_charakterystyczny > 5 and L_do_w_charakterystyczny <=10):
-            eps_L = 1.23
-        elif L_do_w_charakterystyczny > 10 and L_do_w_charakterystyczny <=20:
-            eps_L = 1.13
-        elif L_do_w_charakterystyczny > 20 and L_do_w_charakterystyczny <=30:
-            eps_L = 1.07
-        elif L_do_w_charakterystyczny > 30 and L_do_w_charakterystyczny <=40:
-            eps_L = 1.03
-        elif L_do_w_charakterystyczny > 40:
-            eps_L = 1
-    return eps_L
-        
-def prf_prw(selected_material, selected_temp, temperatura_sciany):
-    if selected_material == "dry_air":
-        mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(selected_material, selected_temp))
-        myresult = mycursor.fetchall()   
-        prf = [i[0] for i in myresult][0]
-        eps_prf_prw = 1
-    elif selected_material == "water":
-        mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(selected_material, selected_temp))
-        myresult = mycursor.fetchall()   
-        prf = [i[0] for i in myresult][0]
-        mycursor.execute("SELECT wspl_rozszerzalnosci FROM {} WHERE temperatura = {}".format(selected_material, temperatura_sciany))
-        myresult = mycursor.fetchall()   
-        prw = [i[0] for i in myresult][0]
-        eps_prf_prw = prf/prw
-    return eps_prf_prw, prf
-
-def etaf_etaw(selected_material, temperatura_wlot, temperatura_sciany):
-    mycursor.execute("SELECT gestosc, wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}".format(selected_material, temperatura_wlot))
-    myresult = mycursor.fetchall()   
-    gestosc_f = [i[0] for i in myresult][0]
-    wspl_lepkosci_kinematycznej_f = [i[1] for i in myresult][0]
-    
-    mycursor.execute("SELECT gestosc, wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}".format(selected_material, temperatura_sciany))
-    myresult = mycursor.fetchall()   
-    gestosc_w = [i[0] for i in myresult][0]
-    wspl_lepkosci_kinematycznej_w = [i[1] for i in myresult][0]
-    
-    etaf = gestosc_f * wspl_lepkosci_kinematycznej_f
-    etaw = gestosc_w * wspl_lepkosci_kinematycznej_w
-    return etaf, etaw
-
-if __name__ == "__main__":
-    
-    #Dane wejsciowe
-    temperatura_wlot = 100 #zmienna wejsciowa!
-    temperatura_wylot = 100  #zmienna wejsciowa! 
-    temperatura_sciany = 110 #zmienna wejsciowa!
-    selected_temp = (temperatura_wlot+temperatura_wylot)/2 
-    selected_material = 'dry_air' #zmienna wejsciowa!
-    selected_velosity = 0.1 #zmienna wejsciowa!
-    wymiar_charakterystyczny = 60*10**-3 #zmienna wejsciowa!
-    dlugosc = 2.1 #dlugosc    
-        
-    try:
-        mydb = msql.connect(host='localhost', 
-                            user='root',
-                            password = '',
-                            database="materials"
-                            )
-        if mydb.is_connected():
-            mycursor = mydb.cursor()
-            print("We are connected to database")  
+ 
+class Case_1:
+        def __init__(self, temperatura_wlot, temperatura_wylot, temperatura_sciany, selected_material, selected_velosity, wymiar_charakterystyczny, dlugosc, mycursor):
+            #Dane wejsciowe
+            self.temperatura_wlot = temperatura_wlot #zmienna wejsciowa!
+            self.temperatura_wylot = temperatura_wylot #zmienna wejsciowa! 
+            self.temperatura_sciany = temperatura_sciany #zmienna wejsciowa!
+            self.selected_temp = (temperatura_wlot+temperatura_wylot)/2 
+            self.selected_material = selected_material #zmienna wejsciowa!
+            self.selected_velosity = selected_velosity #zmienna wejsciowa!
+            self.wymiar_charakterystyczny = wymiar_charakterystyczny #zmienna wejsciowa!
+            self.dlugosc = dlugosc #dlugosc
+            self.mycursor = mycursor
             
-            eps_prf_prw, prf = prf_prw(selected_material, temperatura_wlot, temperatura_sciany)            
-            l_reynoldsa = l_reynoldsa(selected_material, selected_temp, selected_velosity, wymiar_charakterystyczny)            
-            eps_L = rozbieg_hydrauliczny(l_reynoldsa, wymiar_charakterystyczny, dlugosc)            
-            l_grashofa = l_grashofa(selected_material, selected_temp, temperatura_sciany)
-                        
-            print("Liczba reynoldsa: ")
-            print(l_reynoldsa)
-            print("Liczba grashofa: ")
-            print(l_grashofa)
-            print("Prf: ")
-            print(prf)
-            print("eps_L: ")
-            print(eps_L)
-            l_prandtla = l_prandtla(selected_material, selected_temp)
-            print("Liczba prandtla:")
-            print(l_prandtla)
+        def l_reynoldsa(self):
+            self.mycursor.execute("SELECT wspl_lepkosci_dynamicznej FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
+            myresult = self.mycursor.fetchall()            
+            wspl_lepkosci_dynamicznej = [i[0] for i in myresult][0] *10**-6
+            self.l_reynoldsa = (self.selected_velosity*self.wymiar_charakterystyczny)/wspl_lepkosci_dynamicznej  
+            return self.l_reynoldsa
+
+        def l_prandtla(self):  
+            self.mycursor.execute("SELECT wspl_lepkosci_kinematycznej, wspl_dyf_cieplnej FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
+            myresult = self.mycursor.fetchall()            
+            wspl_lepkosci_kinematycznej = [i[0] for i in myresult][0]*10**-6
+            wspl_dyf_cieplnej = [i[1] for i in myresult][0]*10**-6          
+            self.l_prandtla = wspl_lepkosci_kinematycznej/wspl_dyf_cieplnej
+            return self.l_prandtla
+
+        def l_prandtla_cp(self):
+            self.mycursor.execute("SELECT wspl_lepkosci_dynamicznej, cieplo_wlasciwe, wspl_przew_ciepla FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
+            myresult = self.mycursor.fetchall()            
+            wspl_lepkosci_dynamicznej = [i[0] for i in myresult][0]*10**-6
+            cieplo_wlasciwe = [i[1] for i in myresult][0]*10**3
+            wspl_przew_ciepla = [i[2] for i in myresult][0]*10**-2
+            self.l_prandtla_cp = (cieplo_wlasciwe*wspl_lepkosci_dynamicznej)/(wspl_przew_ciepla)
+            return self.l_prandtla_cp
+    
+        def l_grashofa(self):
+            g = 9.81
+            if self.selected_material == "dry_air":
+                beta = 1/373
+            elif self.selected_material == "water":
+                self.mycursor.execute("SELECT wspl_rozszerzalnosci FROM {} WHERE temperatura = {}".format(self.selected_material, abs(self.selected_temp-self.temperatura_sciany)))
+                myresult = self.mycursor.fetchall()
+                beta = [i[0] for i in myresult][0]*10**-4
+            self.mycursor.execute("SELECT wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
+            myresult = self.mycursor.fetchall()   
+            wspl_lepkosci_kinematycznej = [i[0] for i in myresult][0]*10**-6
+            self.l_grashofa = (g*self.wymiar_charakterystyczny**3*beta*abs(self.selected_temp-self.temperatura_sciany)/wspl_lepkosci_kinematycznej**2)
+            return self.l_grashofa
+
+        def rozbieg_hydrauliczny(self):
+            L_do_w_charakterystyczny = round(self.dlugosc/self.wymiar_charakterystyczny)
+            if self.l_reynoldsa <=2300:   
+                if L_do_w_charakterystyczny <=1:
+                    eps_L = 1.9
+                elif (L_do_w_charakterystyczny > 1 and L_do_w_charakterystyczny <=5):
+                    eps_L = 1.44
+                elif (L_do_w_charakterystyczny > 5 and L_do_w_charakterystyczny <=10):
+                    eps_L = 1.28
+                elif L_do_w_charakterystyczny > 10 and L_do_w_charakterystyczny <=20:
+                    eps_L = 1.19
+                elif L_do_w_charakterystyczny > 20 and L_do_w_charakterystyczny <=30:
+                    eps_L = 1.05
+                elif L_do_w_charakterystyczny > 30 and L_do_w_charakterystyczny <=40:
+                    eps_L = 1.02
+                elif L_do_w_charakterystyczny > 40:
+                    eps_L = 1
+            else:
+                if L_do_w_charakterystyczny <=1:
+                    eps_L = 1.65
+                elif (L_do_w_charakterystyczny > 1 and L_do_w_charakterystyczny <=5):
+                    eps_L = 1.34
+                elif (L_do_w_charakterystyczny > 5 and L_do_w_charakterystyczny <=10):
+                    eps_L = 1.23
+                elif L_do_w_charakterystyczny > 10 and L_do_w_charakterystyczny <=20:
+                    eps_L = 1.13
+                elif L_do_w_charakterystyczny > 20 and L_do_w_charakterystyczny <=30:
+                    eps_L = 1.07
+                elif L_do_w_charakterystyczny > 30 and L_do_w_charakterystyczny <=40:
+                    eps_L = 1.03
+                elif L_do_w_charakterystyczny > 40:
+                    eps_L = 1
+            self.eps_L = eps_L
+            return self.eps_L
+        
+            def prf_prw(self):
+                if self.selected_material == "dry_air":
+                    self.mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
+                    myresult = self.mycursor.fetchall()   
+                    self.prf = [i[0] for i in myresult][0]
+                    self.eps_prf_prw = 1
+                elif self.selected_material == "water":
+                    self.mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
+                    myresult = self.mycursor.fetchall()   
+                    self.prf = [i[0] for i in myresult][0]
+                    self.mycursor.execute("SELECT wspl_rozszerzalnosci FROM {} WHERE temperatura = {}".format(self.selected_material, self.temperatura_sciany))
+                    myresult = self.mycursor.fetchall()   
+                    prw = [i[0] for i in myresult][0]
+                    self.eps_prf_prw = self.prf/prw
+                return self.eps_prf_prw, self.prf
+
+        def etaf_etaw(self):
+            self.mycursor.execute("SELECT gestosc, wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}".format(self.selected_material, self.temperatura_wlot))
+            myresult = self.mycursor.fetchall()   
+            gestosc_f = [i[0] for i in myresult][0]
+            wspl_lepkosci_kinematycznej_f = [i[1] for i in myresult][0]
+            
+            self.mycursor.execute("SELECT gestosc, wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}".format(self.selected_material, self.temperatura_sciany))
+            myresult = self.mycursor.fetchall()   
+            gestosc_w = [i[0] for i in myresult][0]
+            wspl_lepkosci_kinematycznej_w = [i[1] for i in myresult][0]
+            self.etaf = gestosc_f * wspl_lepkosci_kinematycznej_f
+            self.etaw = gestosc_w * wspl_lepkosci_kinematycznej_w
+            return self.etaf, self.etaw
+
+        def l_nusselta(self):
+            #-----------------------Laminarny------------------------------ Re<=2300
+            if self.l_reynoldsa <= 2300:
+                   
+                self.l_nusselta = 0.15*(self.l_reynoldsa)**0.33*(self.prf)**0.43*((self.l_grashofa)**0.1)*((self.eps_prf_prw)**0.25)*self.eps_L
+                
+            #-----------------------Przejsciowy------------------------------
+            elif self.l_reynoldsa > 2300 and self.l_reynoldsa <= 10000:   
+                
+                self.l_nusselta = 0.037*(1+(self.wymiar_charakterystyczny/self.dlugosc)**(2/3))*((self.l_reynoldsa)**0.75-180)*self.l_prandtla**0.42*(self.etaf/self.etaw)**0.14
+            
+            #-----------------------Turbuletny------------------------------ Re>=10000
+            elif self.l_reynoldsa > 10000 and self.l_reynoldsa < 50000:
+        
+                self.l_nusselta = 0.021*(self.l_reynoldsa)**0.8*((self.prf)**0.43)*((self.eps_prf_prw)**0.25)*self.eps_L
    
-            if l_reynoldsa <= 2300:
-            
-                #-----------------------Laminarny------------------------------ Re<=2300
-                 
-                l_nusselta = 0.15*(l_reynoldsa)**0.33*((prf)**0.43)*((l_grashofa)**0.1)*((eps_prf_prw)**0.25)*eps_L
-                print("eps_prf_prw: ")
-                print(eps_prf_prw)
-                print('l_nusselta:')
-                print(l_nusselta)
-            
-            elif l_reynoldsa > 2300 and l_reynoldsa <= 10000:   
-                       
-                #-----------------------Przejsciowy------------------------------
-        
-                etaf , etaw = etaf_etaww(selected_material, temperatura_wlot, temperatura_sciany)
-                l_nusselta = 0.037*(1+(wymiar_charakterystyczny/dlugosc)**(2/3))*((l_reynoldsa)**0.75-180)*l_prandtla**0.42*(etaf/etaw)**0.14
-                print('l_nusselta:')
-                print(l_nusselta)
-            
-            elif l_reynoldsa > 10000 and l_reynoldsa < 50000:
+            return self.l_nusselta
     
-                #-----------------------Turbuletny------------------------------ Re>=10000
-                
-                l_nusselta = 0.021*(l_reynoldsa)**0.8*((prf)**0.43)*((eps_prf_prw)**0.25)*eps_L
-                print('l_nusselta:')
-                print(l_nusselta)
-                
-    except Error as e:
-        print("Connection error", e)
+
     
     
     
