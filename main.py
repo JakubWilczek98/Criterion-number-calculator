@@ -1,41 +1,97 @@
-import mysql.connector
-from case_3 import Case_3
+from flask import Flask, render_template, request, flash, redirect, url_for
+
+app = Flask(__name__)
+
+
+@app.route("/")
+@app.route("/home")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/case_1")
+def case_1():
+    return render_template("case_1.html", data=[{'name': 'powietrze'}, {'name': 'woda'}])
+
+
+@app.route("/case_2")
+def case_2():
+    return render_template("case_2.html",
+                           data=[{'name': 'powietrze'}, {'name': 'woda'}],
+                           data1=[{'name': 'Oplyw walca'}, {'name': 'Oplyw plyty'}])
+
+
+@app.route("/case_3")
+def case_3():
+    return render_template("case_3.html", data=[{'name': 'powietrze'}, {'name': 'woda'}])
+
+
+@app.route("/case_4")
+def case_4():
+    return render_template("case_4.html", data=[{'name': 'powietrze'}, {'name': 'woda'}])
+
+
+@app.route("/case_1_result", methods=["POST", "GET"])
+def case_1_result():
+    output = request.form.to_dict()
+    temp1 = float(output["temp1"])
+    temp2 = float(output["temp2"])
+    temp3 = float(output["temp3"])
+    material = request.form.get('material')
+    velosity = float(output["velo"])
+    wymiar = float(output["wymiar"])
+    dlugosc = float(output["dlugosc"])
+
+    return render_template("case_1.html",
+                           temp1=temp1, material=material,
+                           data=[{'name': 'powietrze'}, {'name': 'woda'}])
+
+
+@app.route("/case_2_result", methods=["POST", "GET"])
+def case_2_result():
+    output = request.form.to_dict()
+    temp1 = float(output["temp1"])
+    temp3 = float(output["temp3"])
+    material = request.form.get('material')
+    velosity = float(output["velo"])
+    wymiar = float(output["wymiar"])
+    rodzaj = request.form.get('rodzaj')
+
+    return render_template("case_2.html",
+                           temp1=temp1, rodzaj=rodzaj,
+                           data=[{'name': 'powietrze'}, {'name': 'woda'}],
+                           data1=[{'name': 'Oplyw walca'}, {'name': 'Oplyw plyty'}])
+
+
+@app.route("/case_3_result", methods=["POST", "GET"])
+def case_3_result():
+    output = request.form.to_dict()
+    temp1 = float(output["temp1"])
+    temp3 = float(output["temp3"])
+    material = request.form.get('material')
+    velosity = float(output["velo"])
+    wymiar = float(output["wymiar"])
+
+    return render_template("case_3.html",
+                           temp1=temp1,
+                           temp3=temp3,
+                           )
+
+
+@app.route("/case_4_result", methods=["POST", "GET"])
+def case_4_result():
+    output = request.form.to_dict()
+    temp1 = float(output["temp1"])
+    temp3 = float(output["temp3"])
+    material = request.form.get('material')
+    velosity = float(output["velo"])
+    wymiar = float(output["wymiar"])
+
+    return render_template("case_4.html",
+                           temp1=temp1,
+                           temp3=temp3,
+                           )
+
 
 if __name__ == '__main__':
-    # dane wejściowe
-    material = 'dry_air'
-    temp_plynu = 30
-    temp_powierzchni = 170
-    temp_charakterystyczna = round((temp_powierzchni + temp_plynu)/2)
-    wymiar_charakterystyczny = 0.1
-    predkosc_charakterystyczna = 10
-    przysp_ziemskie = 9.81
-
-    # łączenie się z bazą danych
-    mydb = mysql.connector.connect(
-        host='mysql.agh.edu.pl',
-        user='awilcze1',
-        password='***',
-        database='awilcze1'
-    )
-
-    mycursor = mydb.cursor()
-
-    case = Case_3(material=material, temp_plynu=temp_plynu, temp_powierzchni=temp_powierzchni,
-                  predkosc_charakterystyczna=predkosc_charakterystyczna, wymiar_charakterystyczny=wymiar_charakterystyczny,
-                  mycursor=mycursor
-                  )
-
-    # wyznaczone wartości liczb kryterialnych
-    liczba_Prandtla = case.liczba_Prandtla()
-    liczba_Reynoldsa = case.liczba_Reynoldsa()
-    liczba_Grashofa = case.liczba_Grashofa()
-    liczba_Rayleigha = case.liczba_Rayleigha()
-    liczba_Nusselta = case.liczba_Nusselta()
-
-    print('liczba Prandlta:', liczba_Prandtla,
-          '\nliczba Reynoldsa:', liczba_Reynoldsa,
-          '\nliczba Grashofa:', liczba_Grashofa,
-          '\nliczba Rayleigha:', liczba_Rayleigha,
-          '\nliczba Nusselta:', liczba_Nusselta
-          )
+    app.run(debug=True, port=5001)
