@@ -159,17 +159,23 @@ def case_3_result():
             liczba_Grashofa = case.liczba_Grashofa()
             liczba_Rayleigha = case.liczba_Rayleigha()
             liczba_Nusselta = case.liczba_Nusselta()
+            
+        return render_template("case_3.html",
+                       liczba_Prandtla=liczba_Prandtla,
+                       liczba_Reynoldsa=liczba_Reynoldsa,
+                       liczba_Grashofa=liczba_Grashofa,
+                       liczba_Rayleigha=liczba_Rayleigha,
+                       liczba_Nusselta=liczba_Nusselta,
+                       )
 
     except Error as e:
-        print('Connection error', e)
-
-    return render_template("case_3.html",
-                           liczba_Prandtla=liczba_Prandtla,
-                           liczba_Reynoldsa=liczba_Reynoldsa,
-                           liczba_Grashofa=liczba_Grashofa,
-                           liczba_Rayleigha=liczba_Rayleigha,
-                           liczba_Nusselta=liczba_Nusselta,
+        er = e
+        
+        return render_template("case_3.html",
+                           er = er
                            )
+
+    
 
 
 @app.route("/case_4_result", methods=["POST", "GET"])
@@ -205,16 +211,22 @@ def case_4_result():
             liczba_Rayleigha = case.liczba_Rayleigha()
             liczba_Nusselta = case.liczba_Nusselta()
 
-    except Error as e:
-        print('Connection error', e)
 
-    return render_template("case_3.html",
-                           liczba_Prandtla=liczba_Prandtla,
-                           liczba_Reynoldsa=liczba_Reynoldsa,
-                           liczba_Grashofa=liczba_Grashofa,
-                           liczba_Rayleigha=liczba_Rayleigha,
-                           liczba_Nusselta=liczba_Nusselta,
+        return render_template("case_4.html",
+                               liczba_Prandtla=liczba_Prandtla,
+                               liczba_Reynoldsa=liczba_Reynoldsa,
+                               liczba_Grashofa=liczba_Grashofa,
+                               liczba_Rayleigha=liczba_Rayleigha,
+                               liczba_Nusselta=liczba_Nusselta,
+                               )
+
+    except Error as e:
+        er = e
+        
+        return render_template("case_4.html",
+                           er = er
                            )
+
 
 
 if __name__ == '__main__':
