@@ -1,6 +1,16 @@
 <html>
     <head>
-        <h3><a href="http://127.0.0.1:5001">Home</a></h3>
+        <h2>Kalkulator liczb kryterialnych</h2>
+        <section>
+            <nav>
+                <ul>
+                    <li><a href="http://127.0.0.1:5001">Home</a></li>
+                    <li><a href="http://127.0.0.1:5001/case_1">Przejmowanie ciepła w przepływie wewnątrz kanałów</a></li>
+                    <li><a href="http://127.0.0.1:5001/case_2">Przejmowanie ciepła przy opływach ciał</a></li>
+                    <li><a href="http://127.0.0.1:5001/case_3"><b>Konwekcja swobodna w przestrzeni nieograniczonej</b></a></li>
+                    <li><a href="http://127.0.0.1:5001/case_4">Konwekcja swobodna w przestrzeni ograniczonej</a></li>
+            </nav>
+        </section>
     </head>
     <body>
     <form class = "grid" action = "/case_3_result" method = "POST">
@@ -28,8 +38,9 @@
             <input type = "Submit" class = "file_submit">
 
 
-            <h4>Wyznaczone liczby kryterialne:</h4>
+            
             {% if liczba_Prandtla %}
+            <h4>Wyznaczone liczby kryterialne:</h4>
             <h3  style="color: blue;">Liczba Prandtla: {{liczba_Prandtla}}</h3>
             <h3  style="color: blue;">Liczba Reynoldsa: {{liczba_Reynoldsa}}</h3>
             <h3  style="color: blue;">Liczba Grashofa: {{liczba_Grashofa}}</h3>
