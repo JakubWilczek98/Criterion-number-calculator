@@ -34,11 +34,17 @@
             
             
             <h4>Wyznaczone liczby kryterialne:</h4>
-            {% if temp1 %}
-            <h3  style="color: blue;">{{temp1}} {{material}}</h3>
+            {% if l_reynoldsa %}
+            <h3  style="color: blue;">Liczba Reynoldsa: {{l_reynoldsa}}</h3>
+            <h3  style="color: blue;">Liczba Prandtla: {{l_prandtla}}</h3>
+            <h3  style="color: blue;">Liczba Grashofa: {{l_grashofa}}</h3>
+            <h3  style="color: blue;">Liczba Nusselta: {{l_nusselta}}</h3>
             {% endif %}
             
-        
+            {% if er %}
+            <h3  style="color: blue;">{{er}}</h3>
+            {% endif %}
+            
         </form>
     </body>
 
