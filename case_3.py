@@ -15,7 +15,7 @@ class Case_3():
         self.mycursor.execute(selection)
         myresult = self.mycursor.fetchall()
         self.liczba_Prandtla = [i[0] for i in myresult][0]
-        return self.liczba_Prandtla
+        return round(self.liczba_Prandtla, 3)
 
     def liczba_Reynoldsa(self):
         selection = 'SELECT wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}'.format(self.material, self.temp_charakterystyczna)
@@ -23,7 +23,7 @@ class Case_3():
         myresult = self.mycursor.fetchall()
         wsp_lepkosci_kinematycznej = ([i[0] for i in myresult][0]) / 10 ** 6
         self.liczba_Reynoldsa = (self.predkosc_charakterystyczna * self.wymiar_charakterystyczny) / wsp_lepkosci_kinematycznej
-        return self.liczba_Reynoldsa
+        return round(self.liczba_Reynoldsa, 3)
 
     def liczba_Grashofa(self):
         if self.material == 'water':
@@ -44,11 +44,11 @@ class Case_3():
             wsp_rozszerzalnosci = 1 / 373
             self.liczba_Grashofa = ((wsp_rozszerzalnosci * self.przysp_ziemskie * self.wymiar_charakterystyczny ** 3) / wsp_lepkosci_kinematycznej ** 2) * (
                            self.temp_powierzchni - self.temp_plynu)
-        return self.liczba_Grashofa
+        return round(self.liczba_Grashofa, 3)
 
     def liczba_Rayleigha(self):
         self.liczba_Rayleigha = self.liczba_Grashofa * self.liczba_Prandtla
-        return self.liczba_Rayleigha
+        return round(self.liczba_Rayleigha, 3)
 
     def liczba_Nusselta(self):
         if self.liczba_Rayleigha < 0.001:
@@ -64,4 +64,4 @@ class Case_3():
             C = 0.135
             n = 1 / 3
         self.liczba_Nusselta = C * (self.liczba_Rayleigha) ** (n)
-        return self.liczba_Nusselta
+        return round(self.liczba_Nusselta, 3)
