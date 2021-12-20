@@ -21,7 +21,7 @@ class Case_1:
             myresult = self.mycursor.fetchall()            
             wspl_lepkosci_dynamicznej = [i[0] for i in myresult][0] *10**-6
             self.l_reynoldsa = (self.selected_velosity*self.wymiar_charakterystyczny)/wspl_lepkosci_dynamicznej  
-            return self.l_reynoldsa
+            return round(self.l_reynoldsa,3)
 
         def l_prandtla(self):  
             self.mycursor.execute("SELECT wspl_lepkosci_kinematycznej, wspl_dyf_cieplnej FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
@@ -29,7 +29,7 @@ class Case_1:
             wspl_lepkosci_kinematycznej = [i[0] for i in myresult][0]*10**-6
             wspl_dyf_cieplnej = [i[1] for i in myresult][0]*10**-6          
             self.l_prandtla = wspl_lepkosci_kinematycznej/wspl_dyf_cieplnej
-            return self.l_prandtla
+            return round(self.l_prandtla,3)
 
         def l_prandtla_cp(self):
             self.mycursor.execute("SELECT wspl_lepkosci_dynamicznej, cieplo_wlasciwe, wspl_przew_ciepla FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
@@ -52,7 +52,7 @@ class Case_1:
             myresult = self.mycursor.fetchall()   
             wspl_lepkosci_kinematycznej = [i[0] for i in myresult][0]*10**-6
             self.l_grashofa = (g*self.wymiar_charakterystyczny**3*beta*abs(self.selected_temp-self.temperatura_sciany)/wspl_lepkosci_kinematycznej**2)
-            return self.l_grashofa
+            return round(self.l_grashofa)
 
         def rozbieg_hydrauliczny(self):
             L_do_w_charakterystyczny = round(self.dlugosc/self.wymiar_charakterystyczny)
@@ -89,21 +89,21 @@ class Case_1:
             self.eps_L = eps_L
             return self.eps_L
         
-            def prf_prw(self):
-                if self.selected_material == "dry_air":
-                    self.mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
-                    myresult = self.mycursor.fetchall()   
-                    self.prf = [i[0] for i in myresult][0]
-                    self.eps_prf_prw = 1
-                elif self.selected_material == "water":
-                    self.mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
-                    myresult = self.mycursor.fetchall()   
-                    self.prf = [i[0] for i in myresult][0]
-                    self.mycursor.execute("SELECT wspl_rozszerzalnosci FROM {} WHERE temperatura = {}".format(self.selected_material, self.temperatura_sciany))
-                    myresult = self.mycursor.fetchall()   
-                    prw = [i[0] for i in myresult][0]
-                    self.eps_prf_prw = self.prf/prw
-                return self.eps_prf_prw, self.prf
+        def prf_prw(self):
+            if self.selected_material == "dry_air":
+                self.mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
+                myresult = self.mycursor.fetchall()   
+                self.prf = [i[0] for i in myresult][0]
+                self.eps_prf_prw = 1
+            elif self.selected_material == "water":
+                self.mycursor.execute("SELECT liczba_prandtla FROM {} WHERE temperatura = {}".format(self.selected_material, self.selected_temp))
+                myresult = self.mycursor.fetchall()   
+                self.prf = [i[0] for i in myresult][0]
+                self.mycursor.execute("SELECT wspl_rozszerzalnosci FROM {} WHERE temperatura = {}".format(self.selected_material, self.temperatura_sciany))
+                myresult = self.mycursor.fetchall()   
+                prw = [i[0] for i in myresult][0]
+                self.eps_prf_prw = self.prf/prw
+            return self.eps_prf_prw, self.prf
 
         def etaf_etaw(self):
             self.mycursor.execute("SELECT gestosc, wspl_lepkosci_kinematycznej FROM {} WHERE temperatura = {}".format(self.selected_material, self.temperatura_wlot))
@@ -135,7 +135,7 @@ class Case_1:
         
                 self.l_nusselta = 0.021*(self.l_reynoldsa)**0.8*((self.prf)**0.43)*((self.eps_prf_prw)**0.25)*self.eps_L
    
-            return self.l_nusselta
+            return round(self.l_nusselta,3)
     
 
     

@@ -20,7 +20,7 @@ class Case_2:
         myresult = self.mycursor.fetchall()            
         wspl_lepkosci_dynamicznej = [i[0] for i in myresult][0] *10**-6
         self.l_reynoldsa = (self.selected_velosity*self.wymiar_charakterystyczny)/wspl_lepkosci_dynamicznej  
-        return self.l_reynoldsa
+        return round(self.l_reynoldsa,3)
 
     def prf_prw(self):
         if self.selected_material == "dry_air":
@@ -64,7 +64,7 @@ class Case_2:
         elif self.rodzaj_oplywu == "walec":
             self.l_nusselta = self.C*(self.l_reynoldsa)**self.m*(self.prf)**0.38*(self.eps_prf_prw)**0.25
 
-        return self.l_nusselta
+        return round(self.l_nusselta,3)
 
 '''
 if __name__ == "__main__":
