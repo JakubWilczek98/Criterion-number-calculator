@@ -46,35 +46,36 @@ def liczba_Nusselta(liczba_Rayleigha):
         n = 1 / 3
     return C * (liczba_Rayleigha)**(n)
 
-# dane wejściowe
-material = 'dry_air'
-temp_plynu = 30
-temp_powierzchni = 170
-temp_charakterystyczna = round((temp_powierzchni + temp_plynu)/2)
-wymiar_charakterystyczny = 0.1
-predkosc_charakterystyczna = 10
-przysp_ziemskie = 9.81
+if __name__ == '__main__':
+    # dane wejściowe
+    material = 'dry_air'
+    temp_plynu = 30
+    temp_powierzchni = 170
+    temp_charakterystyczna = round((temp_powierzchni + temp_plynu)/2)
+    wymiar_charakterystyczny = 0.1
+    predkosc_charakterystyczna = 10
+    przysp_ziemskie = 9.81
 
-# łączenie się z bazą danych
-mydb = mysql.connector.connect(
-    host='mysql.agh.edu.pl',
-    user='awilcze1',
-    password='***',
-    database='awilcze1'
-)
+    # łączenie się z bazą danych
+    mydb = mysql.connector.connect(
+        host='mysql.agh.edu.pl',
+        user='awilcze1',
+        password='***',
+        database='awilcze1'
+    )
 
-mycursor = mydb.cursor()
+    mycursor = mydb.cursor()
 
-# wyznaczone wartości liczb kryterialnych
-liczba_Prandtla = liczba_Prandtla(material, temp_charakterystyczna)
-liczba_Reynoldsa = liczba_Reynoldsa(material, predkosc_charakterystyczna, wymiar_charakterystyczny)
-liczba_Grashofa = liczba_Grashofa(material, temp_charakterystyczna, przysp_ziemskie, temp_powierzchni, temp_plynu)
-liczba_Rayleigha = liczba_Rayleigha(liczba_Prandtla, liczba_Grashofa)
-liczba_Nusselta = liczba_Nusselta(liczba_Rayleigha)
+    # wyznaczone wartości liczb kryterialnych
+    liczba_Prandtla = liczba_Prandtla(material, temp_charakterystyczna)
+    liczba_Reynoldsa = liczba_Reynoldsa(material, predkosc_charakterystyczna, wymiar_charakterystyczny)
+    liczba_Grashofa = liczba_Grashofa(material, temp_charakterystyczna, przysp_ziemskie, temp_powierzchni, temp_plynu)
+    liczba_Rayleigha = liczba_Rayleigha(liczba_Prandtla, liczba_Grashofa)
+    liczba_Nusselta = liczba_Nusselta(liczba_Rayleigha)
 
-print('liczba Prandlta:', liczba_Prandtla,
-      '\nliczba Reynoldsa:', liczba_Reynoldsa,
-      '\nliczba Grashofa:', liczba_Grashofa,
-      '\nliczba Rayleigha:', liczba_Rayleigha,
-      '\nliczba Nusselta:', liczba_Nusselta
-      )
+    print('liczba Prandlta:', liczba_Prandtla,
+          '\nliczba Reynoldsa:', liczba_Reynoldsa,
+          '\nliczba Grashofa:', liczba_Grashofa,
+          '\nliczba Rayleigha:', liczba_Rayleigha,
+          '\nliczba Nusselta:', liczba_Nusselta
+          )
