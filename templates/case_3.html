@@ -2,7 +2,39 @@
     <head>
         <h3><a href="http://127.0.0.1:5001">Home</a></h3>
     </head>
-    <body>    
+    <body>
+    <form class = "grid" action = "/case_3_result" method = "POST">
+            <h4>Konwekcja swobodna w przestrzeni ograniczonej</h4>
+            <label for = "temp1"> Temperatura płynu: </label>
+            <input type = "text" name="temp1" id = "temp1">
+            <br/>
+            <label for = "temp3"> Temperatura sciany: </label>
+            <input type = "text" name="temp3" id = "temp3">
+            <br/>
+            <label for = "material"> Wybierz płyn: </label>
+            <select name="material" class="selectpicker form-control">
+            {% for o in data %}
+            <option value="{{ o.name }}">{{ o.name }}</option>
+            {% endfor %}
+            </select>
+            <br/>
+            <label for = "velo"> Prędkosc płynu: </label>
+            <input type = "text" name="velo" id = "velo">
+            <br/>
+            <label for = "wymiar"> Wymiar charakterystyczny: </label>
+            <input type = "wymiar" name="wymiar" id = "wymiar">
+            <br/>
+            </select>
+            <input type = "Submit" class = "file_submit">
+
+
+            <h4>Wyznaczone liczby kryterialne:</h4>
+            {% if temp1 %}
+            <h3  style="color: blue;">{{temp1}} {{rodzaj}}</h3>
+            {% endif %}
+
+
+        </form>
 
     </body>
 
