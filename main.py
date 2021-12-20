@@ -1,4 +1,8 @@
+import mysql.connector as msql
+from mysql.connector import Error
 from flask import Flask, render_template, request, flash, redirect,  url_for
+from case_3 import Case_3
+from case_4 import Case_4
 
 
 app = Flask(__name__)
@@ -25,12 +29,12 @@ def case_2():
 @app.route("/case_3")
 
 def case_3():
-    return render_template("case_3.html", data=[{'name':'powietrze'}, {'name':'woda'}])
+    return render_template("case_3.html", data=[{'name':'dry_air'}, {'name':'water'}])
 
 @app.route("/case_4")
 
 def case_4():
-    return render_template("case_4.html", data=[{'name':'powietrze'}, {'name':'woda'}])
+    return render_template("case_4.html", data=[{'name':'dry_air'}, {'name':'water'}])
 
 @app.route("/case_1_result", methods = ["POST", "GET"])
 def case_1_result():
@@ -74,9 +78,39 @@ def case_3_result():
     velosity = float(output["velo"])
     wymiar = float(output["wymiar"])
 
+    try:
+        mydb = msql.connect(host='mysql.agh.edu.pl',
+                            user='awilcze1',
+                            password='***',
+                            database='awilcze1',
+                            )
+        if mydb.is_connected():
+            mycursor = mydb.cursor()
+            print('We are connected to database')
+
+            case = Case_3(material=material,
+                          temp_plynu=temp1,
+                          temp_powierzchni=temp3,
+                          predkosc_charakterystyczna=velosity,
+                          wymiar_charakterystyczny=wymiar,
+                          mycursor=mycursor
+                          )
+
+            liczba_Prandtla = case.liczba_Prandtla()
+            liczba_Reynoldsa = case.liczba_Reynoldsa()
+            liczba_Grashofa = case.liczba_Grashofa()
+            liczba_Rayleigha = case.liczba_Rayleigha()
+            liczba_Nusselta = case.liczba_Nusselta()
+
+    except Error as e:
+        print('Connection error', e)
+
     return render_template("case_3.html",
-                           temp1=temp1,
-                           temp3=temp3,
+                           liczba_Prandtla=liczba_Prandtla,
+                           liczba_Reynoldsa=liczba_Reynoldsa,
+                           liczba_Grashofa=liczba_Grashofa,
+                           liczba_Rayleigha=liczba_Rayleigha,
+                           liczba_Nusselta=liczba_Nusselta,
                            )
 
 
@@ -89,9 +123,39 @@ def case_4_result():
     velosity = float(output["velo"])
     wymiar = float(output["wymiar"])
 
-    return render_template("case_4.html",
-                           temp1=temp1,
-                           temp3=temp3,
+    try:
+        mydb = msql.connect(host='mysql.agh.edu.pl',
+                            user='awilcze1',
+                            password='***',
+                            database='awilcze1',
+                            )
+        if mydb.is_connected():
+            mycursor = mydb.cursor()
+            print('We are connected to database')
+
+            case = Case_3(material=material,
+                          temp_plynu=temp1,
+                          temp_powierzchni=temp3,
+                          predkosc_charakterystyczna=velosity,
+                          wymiar_charakterystyczny=wymiar,
+                          mycursor=mycursor
+                          )
+
+            liczba_Prandtla = case.liczba_Prandtla()
+            liczba_Reynoldsa = case.liczba_Reynoldsa()
+            liczba_Grashofa = case.liczba_Grashofa()
+            liczba_Rayleigha = case.liczba_Rayleigha()
+            liczba_Nusselta = case.liczba_Nusselta()
+
+    except Error as e:
+        print('Connection error', e)
+
+    return render_template("case_3.html",
+                           liczba_Prandtla=liczba_Prandtla,
+                           liczba_Reynoldsa=liczba_Reynoldsa,
+                           liczba_Grashofa=liczba_Grashofa,
+                           liczba_Rayleigha=liczba_Rayleigha,
+                           liczba_Nusselta=liczba_Nusselta,
                            )
 
 
