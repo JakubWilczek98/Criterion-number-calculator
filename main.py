@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request, flash, redirect,  url_for
+from flask import Flask, render_template, request, flash, redirect,  url_for
 
 app = Flask(__name__)
 
@@ -71,7 +71,7 @@ def case_3_result():
 
     return render_template("case_3.html",
                            temp1=temp1,
-                           data=[{'name': 'powietrze'}, {'name': 'woda'}],
+                           temp3=temp3,
                            )
 
 @app.route("/case_4_result", methods=["POST", "GET"])
@@ -86,7 +86,6 @@ def case_4_result():
     return render_template("case_4.html",
                            temp1=temp1,
                            temp3=temp3,
-                           data=[{'name': 'powietrze'}, {'name': 'woda'}],
                            )
 
 if __name__ == '__main__':
