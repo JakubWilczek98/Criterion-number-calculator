@@ -69,11 +69,11 @@ def case_1_result():
            l_nusselta = case.l_nusselta()
            
            return render_template("case_1.html",
-                           l_reynoldsa = l_reynoldsa, 
-                           l_prandtla = l_prandtla,
-                           l_grashofa = l_grashofa,
-                           l_nusselta = l_nusselta,
-                           data=[{'name': 'dry_air'}, {'name': 'water'}])
+                            l_reynoldsa = l_reynoldsa, 
+                            l_prandtla = l_prandtla,
+                            l_grashofa = l_grashofa,
+                            l_nusselta = l_nusselta,
+                            data=[{'name': 'dry_air'}, {'name': 'water'}])
      
     except Error as e:
         er = e
@@ -112,10 +112,9 @@ def case_2_result():
                l_nusselta = case.l_nusselta()
         
     
-        return render_template("case_2.html",
-                               l_reynoldsa = l_reynoldsa,                            
-                               l_nusselta = l_nusselta,
-                               data=[{'name': 'dry_air'}, {'name': 'water'}],
+        return render_template("case_2.html", l_reynoldsa = l_reynoldsa, 
+                               l_nusselta = l_nusselta, 
+                               data=[{'name': 'dry_air'}, {'name': 'water'}], 
                                data1=[{'name': 'plyta'}, {'name': 'walec'}])
     
     except Error as e:
